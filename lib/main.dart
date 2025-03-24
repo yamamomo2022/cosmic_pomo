@@ -1,5 +1,6 @@
 import 'dart:async'; // Add this import for Timer
-import 'dart:math' show pi, cos, sin; // Add this import for circular motion
+import 'dart:math'
+    show pi, cos, sin, atan2; // Add this import for circular motion
 
 import 'package:flutter/material.dart';
 
@@ -33,7 +34,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
-  static const int _pomodoroDuration = 25 * 60; // 25 minutes
+  static const int _pomodoroDuration = 1 * 60; // 25 minutes
   int _remainingTime = _pomodoroDuration;
   Timer? _timer;
 
@@ -45,20 +46,17 @@ class _MyHomePageState extends State<MyHomePage>
   void initState() {
     super.initState();
 
-    // Initialize animation controller
+    // タイマーの総時間に合わせたアニメーションコントローラの初期化
     _animationController = AnimationController(
-      duration: const Duration(seconds: 10),
+      duration: const Duration(seconds: _pomodoroDuration),
       vsync: this,
     );
 
-    // Create animation that repeats continuously
+    // タイマーと逆方向に動くアニメーション（タイマーが減るにつれて惑星は進む）
     _animation = Tween<double>(
       begin: 0,
       end: 2 * pi,
     ).animate(_animationController);
-
-    // Start the animation
-    _animationController.repeat();
   }
 
   @override
@@ -72,10 +70,21 @@ class _MyHomePageState extends State<MyHomePage>
     if (_timer != null) {
       _timer!.cancel();
     }
+
+    // タイマーとアニメーションの同期に必要な変数
+    final totalDuration = _pomodoroDuration.toDouble();
+    final currentProgress = _remainingTime / totalDuration;
+
+    // アニメーションを現在のタイマー位置から開始
+    _animationController.value = 1.0 - currentProgress;
+
+    // タイマーが減るにつれてアニメーションが進む
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_remainingTime > 0) {
           _remainingTime--;
+          // タイマーの進行に合わせてアニメーション位置を更新
+          _animationController.value = 1.0 - (_remainingTime / totalDuration);
         } else {
           _timer!.cancel();
         }
@@ -87,6 +96,8 @@ class _MyHomePageState extends State<MyHomePage>
     if (_timer != null) {
       _timer!.cancel();
     }
+    // アニメーションも停止
+    _animationController.stop();
   }
 
   void _resetTimer() {
@@ -95,6 +106,8 @@ class _MyHomePageState extends State<MyHomePage>
       if (_timer != null) {
         _timer!.cancel();
       }
+      // アニメーションをリセット
+      _animationController.value = 0.0;
     });
   }
 
@@ -104,40 +117,53 @@ class _MyHomePageState extends State<MyHomePage>
     return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
-  // ...existing timer methods...
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+      // ...existing code...
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // Circular motion animation
+            const SizedBox(height: 20),
+            Text(
+              'Pomodoro Timer',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            Text(
+              _formatTime(_remainingTime),
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 20),
+            // 円運動アニメーション
             SizedBox(
               height: 200,
               width: 200,
               child: AnimatedBuilder(
                 animation: _animation,
                 builder: (context, child) {
-                  // Calculate position in circular path
-                  final radius = 80.0;
-                  final centerX = 100.0;
-                  final centerY = 100.0;
-                  final x = centerX + radius * cos(_animation.value);
-                  final y = centerY + radius * sin(_animation.value);
+                  // Orbital parameters with descriptive names
+                  const double orbitRadius = 80.0;
+                  const double centerX = 100.0;
+                  const double centerY = 100.0;
+                  const double celestialBodySize = 30.0;
+                  const double celestialBodyRadius = celestialBodySize / 2;
+
+                  // Calculate planet position - subtract pi/2 to start from top position
+                  // When animation.value is 0, planet will be at 12 o'clock position
+                  final double planetAngle = _animation.value - (pi / 2);
+                  final double planetX =
+                      centerX + orbitRadius * cos(planetAngle);
+                  final double planetY =
+                      centerY + orbitRadius * sin(planetAngle);
 
                   return Stack(
                     children: [
-                      // Circular path (optional)
+                      // Orbit path
                       Center(
                         child: Container(
-                          width: radius * 2,
-                          height: radius * 2,
+                          width: orbitRadius * 2,
+                          height: orbitRadius * 2,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
@@ -147,16 +173,69 @@ class _MyHomePageState extends State<MyHomePage>
                           ),
                         ),
                       ),
-                      // Moving circular object
+                      // Sun at the center of the orbit
                       Positioned(
-                        left: x - 15, // Adjust for circle radius
-                        top: y - 15, // Adjust for circle radius
+                        left: centerX - celestialBodyRadius,
+                        top: centerY - celestialBodyRadius,
                         child: Container(
-                          width: 30,
-                          height: 30,
+                          width: celestialBodySize,
+                          height: celestialBodySize,
                           decoration: const BoxDecoration(
-                            color: Colors.deepPurple,
+                            color: Colors.red,
                             shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                      // Interactive planet orbiting around the sun
+                      Positioned(
+                        left: planetX - celestialBodyRadius,
+                        top: planetY - celestialBodyRadius,
+                        child: GestureDetector(
+                          onPanUpdate: (details) {
+                            // Calculate drag position relative to orbit center
+                            final double dragX =
+                                details.localPosition.dx +
+                                planetX -
+                                celestialBodyRadius -
+                                centerX;
+                            final double dragY =
+                                details.localPosition.dy +
+                                planetY -
+                                celestialBodyRadius -
+                                centerY;
+
+                            // Calculate angle from drag position (atan2 gives angle in radians)
+                            double newAngle = atan2(dragY, dragX) + (pi / 2);
+                            if (newAngle < 0) newAngle += 2 * pi;
+
+                            // Convert to normalized progress value (0.0 to 1.0)
+                            final double progressValue = newAngle / (2 * pi);
+
+                            // Update animation and timer
+                            setState(() {
+                              // Update animation controller
+                              _animationController.value = progressValue;
+
+                              // Update timer based on new position
+                              final int newRemainingTime =
+                                  (_pomodoroDuration * (1.0 - progressValue))
+                                      .round();
+                              _remainingTime = newRemainingTime;
+
+                              // Stop existing timer
+                              if (_timer != null) {
+                                _timer!.cancel();
+                                _timer = null;
+                              }
+                            });
+                          },
+                          child: Container(
+                            width: celestialBodySize,
+                            height: celestialBodySize,
+                            decoration: const BoxDecoration(
+                              color: Colors.blue,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                         ),
                       ),
@@ -164,11 +243,6 @@ class _MyHomePageState extends State<MyHomePage>
                   );
                 },
               ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Pomodoro Timer: ${_formatTime(_remainingTime)}',
-              style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 20),
             Row(

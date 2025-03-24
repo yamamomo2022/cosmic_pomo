@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async'; // Add this import for Timer
+
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,17 +31,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   static const int _pomodoroDuration = 25 * 60; // 25 minutes
   int _remainingTime = _pomodoroDuration;
   Timer? _timer;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   void _startTimer() {
     if (_timer != null) {
       _timer!.cancel();

@@ -8,9 +8,7 @@ import '../widgets/orbital_animation.dart';
 import '../widgets/timer_controls.dart';
 
 class PomodoroScreen extends StatefulWidget {
-  const PomodoroScreen({super.key, required this.title});
-
-  final String title;
+  const PomodoroScreen({super.key});
 
   @override
   State<PomodoroScreen> createState() => _PomodoroScreenState();

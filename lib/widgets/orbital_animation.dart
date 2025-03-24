@@ -13,7 +13,7 @@ class OrbitalAnimation extends StatelessWidget {
   });
 
   final Animation<double> animation;
-  final Function(double) onPlanetDragged;
+  final void Function(double) onPlanetDragged;
 
   @override
   Widget build(BuildContext context) {
@@ -59,14 +59,14 @@ class OrbitalAnimation extends StatelessWidget {
   ) {
     // Calculate drag position relative to orbit center
     final double dragX =
-        details.localPosition.dx +
-        position['x']! -
-        position['radius']! -
+        (position['x'] ?? 0) -
+        (position['radius'] ?? 0) +
+        details.localPosition.dx -
         AppConstants.centerPoint;
     final double dragY =
-        details.localPosition.dy +
-        position['y']! -
-        position['radius']! -
+        (position['y'] ?? 0) -
+        (position['radius'] ?? 0) +
+        details.localPosition.dy -
         AppConstants.centerPoint;
 
     // Calculate angle from drag position

@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const PomodoroScreen(title: 'Cosmic Pomo'),
+      home: const PomodoroScreen(),
     );
   }
 }

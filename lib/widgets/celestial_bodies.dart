@@ -56,7 +56,7 @@ class DraggablePlanet extends StatelessWidget {
   });
 
   final Map<String, double> position;
-  final Function(DragUpdateDetails, Map<String, double>) onDrag;
+  final void Function(DragUpdateDetails, Map<String, double>) onDrag;
 
   @override
   Widget build(BuildContext context) {

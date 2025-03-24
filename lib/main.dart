@@ -1,6 +1,5 @@
-import 'dart:async'; // Add this import for Timer
-import 'dart:math'
-    show pi, cos, sin, atan2; // Add this import for circular motion
+import 'dart:async';
+import 'dart:math' show pi, cos, sin, atan2;
 
 import 'package:flutter/material.dart';
 
@@ -14,11 +13,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Cosmic Pomo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Cosmic Pomo'),
     );
   }
 }
@@ -34,8 +33,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
-  static const int _pomodoroDuration = 1 * 60; // 25 minutes
-  int _remainingTime = _pomodoroDuration;
+  // Constants for the Pomodoro timer
+  static const int kPomodoroDuration = 25 * 60; // 25 minutes
+
+  // Celestial body properties
+  static const double kOrbitRadius = 80.0;
+  static const double kCenterPoint = 100.0;
+  static const double kCelestialBodySize = 30.0;
+  static const Color kSunColor = Colors.red;
+  static const Color kPlanetColor = Colors.blue;
+  static const Color kOrbitColor = Colors.grey;
+
+  int _remainingTime = kPomodoroDuration;
   Timer? _timer;
 
   // Animation controller for circular motion
@@ -46,13 +55,14 @@ class _MyHomePageState extends State<MyHomePage>
   void initState() {
     super.initState();
 
-    // タイマーの総時間に合わせたアニメーションコントローラの初期化
+    // Initialize animation controller with the total timer duration
     _animationController = AnimationController(
-      duration: const Duration(seconds: _pomodoroDuration),
+      duration: const Duration(seconds: kPomodoroDuration),
       vsync: this,
     );
 
-    // タイマーと逆方向に動くアニメーション（タイマーが減るにつれて惑星は進む）
+    // Animation that moves in the opposite direction of the timer
+    // (as timer decreases, planet moves forward)
     _animation = Tween<double>(
       begin: 0,
       end: 2 * pi,
@@ -71,19 +81,19 @@ class _MyHomePageState extends State<MyHomePage>
       _timer!.cancel();
     }
 
-    // タイマーとアニメーションの同期に必要な変数
-    final totalDuration = _pomodoroDuration.toDouble();
+    // Variables needed for syncing the timer and animation
+    final totalDuration = kPomodoroDuration.toDouble();
     final currentProgress = _remainingTime / totalDuration;
 
-    // アニメーションを現在のタイマー位置から開始
+    // Start animation from current timer position
     _animationController.value = 1.0 - currentProgress;
 
-    // タイマーが減るにつれてアニメーションが進む
+    // Timer progresses and animation moves accordingly
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_remainingTime > 0) {
           _remainingTime--;
-          // タイマーの進行に合わせてアニメーション位置を更新
+          // Update animation position based on timer progress
           _animationController.value = 1.0 - (_remainingTime / totalDuration);
         } else {
           _timer!.cancel();
@@ -96,17 +106,17 @@ class _MyHomePageState extends State<MyHomePage>
     if (_timer != null) {
       _timer!.cancel();
     }
-    // アニメーションも停止
+    // Stop animation as well
     _animationController.stop();
   }
 
   void _resetTimer() {
     setState(() {
-      _remainingTime = _pomodoroDuration;
+      _remainingTime = kPomodoroDuration;
       if (_timer != null) {
         _timer!.cancel();
       }
-      // アニメーションをリセット
+      // Reset animation
       _animationController.value = 0.0;
     });
   }
@@ -117,10 +127,30 @@ class _MyHomePageState extends State<MyHomePage>
     return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
+  void _updateTimerFromPlanetPosition(double newAngle) {
+    // Calculate normalized progress value (0.0 to 1.0)
+    final double progressValue = newAngle / (2 * pi);
+
+    setState(() {
+      // Update animation controller
+      _animationController.value = progressValue;
+
+      // Update timer based on new position
+      final int newRemainingTime =
+          (kPomodoroDuration * (1.0 - progressValue)).round();
+      _remainingTime = newRemainingTime;
+
+      // Stop existing timer
+      if (_timer != null) {
+        _timer!.cancel();
+        _timer = null;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ...existing code...
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -135,138 +165,130 @@ class _MyHomePageState extends State<MyHomePage>
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 20),
-            // 円運動アニメーション
-            SizedBox(
-              height: 200,
-              width: 200,
-              child: AnimatedBuilder(
-                animation: _animation,
-                builder: (context, child) {
-                  // Orbital parameters with descriptive names
-                  const double orbitRadius = 80.0;
-                  const double centerX = 100.0;
-                  const double centerY = 100.0;
-                  const double celestialBodySize = 30.0;
-                  const double celestialBodyRadius = celestialBodySize / 2;
-
-                  // Calculate planet position - subtract pi/2 to start from top position
-                  // When animation.value is 0, planet will be at 12 o'clock position
-                  final double planetAngle = _animation.value - (pi / 2);
-                  final double planetX =
-                      centerX + orbitRadius * cos(planetAngle);
-                  final double planetY =
-                      centerY + orbitRadius * sin(planetAngle);
-
-                  return Stack(
-                    children: [
-                      // Orbit path
-                      Center(
-                        child: Container(
-                          width: orbitRadius * 2,
-                          height: orbitRadius * 2,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.grey.withOpacity(0.3),
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                      ),
-                      // Sun at the center of the orbit
-                      Positioned(
-                        left: centerX - celestialBodyRadius,
-                        top: centerY - celestialBodyRadius,
-                        child: Container(
-                          width: celestialBodySize,
-                          height: celestialBodySize,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                      // Interactive planet orbiting around the sun
-                      Positioned(
-                        left: planetX - celestialBodyRadius,
-                        top: planetY - celestialBodyRadius,
-                        child: GestureDetector(
-                          onPanUpdate: (details) {
-                            // Calculate drag position relative to orbit center
-                            final double dragX =
-                                details.localPosition.dx +
-                                planetX -
-                                celestialBodyRadius -
-                                centerX;
-                            final double dragY =
-                                details.localPosition.dy +
-                                planetY -
-                                celestialBodyRadius -
-                                centerY;
-
-                            // Calculate angle from drag position (atan2 gives angle in radians)
-                            double newAngle = atan2(dragY, dragX) + (pi / 2);
-                            if (newAngle < 0) newAngle += 2 * pi;
-
-                            // Convert to normalized progress value (0.0 to 1.0)
-                            final double progressValue = newAngle / (2 * pi);
-
-                            // Update animation and timer
-                            setState(() {
-                              // Update animation controller
-                              _animationController.value = progressValue;
-
-                              // Update timer based on new position
-                              final int newRemainingTime =
-                                  (_pomodoroDuration * (1.0 - progressValue))
-                                      .round();
-                              _remainingTime = newRemainingTime;
-
-                              // Stop existing timer
-                              if (_timer != null) {
-                                _timer!.cancel();
-                                _timer = null;
-                              }
-                            });
-                          },
-                          child: Container(
-                            width: celestialBodySize,
-                            height: celestialBodySize,
-                            decoration: const BoxDecoration(
-                              color: Colors.blue,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
+            _buildOrbitalAnimation(),
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: _startTimer,
-                  child: const Text('Start'),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: _stopTimer,
-                  child: const Text('Stop'),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: _resetTimer,
-                  child: const Text('Reset'),
-                ),
-              ],
-            ),
+            _buildTimerControls(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildOrbitalAnimation() {
+    return SizedBox(
+      height: 200,
+      width: 200,
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          // Calculate planet position - subtract pi/2 to start from top position
+          final double planetAngle = _animation.value - (pi / 2);
+          final planetPosition = _calculatePlanetPosition(planetAngle);
+
+          return Stack(
+            children: [
+              _buildOrbitPath(),
+              _buildSun(),
+              _buildDraggablePlanet(planetPosition),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Map<String, double> _calculatePlanetPosition(double angle) {
+    const double celestialBodyRadius = kCelestialBodySize / 2;
+
+    final double x = kCenterPoint + kOrbitRadius * cos(angle);
+    final double y = kCenterPoint + kOrbitRadius * sin(angle);
+
+    return {'x': x, 'y': y, 'radius': celestialBodyRadius};
+  }
+
+  Widget _buildOrbitPath() {
+    return Center(
+      child: Container(
+        width: kOrbitRadius * 2,
+        height: kOrbitRadius * 2,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: kOrbitColor.withOpacity(0.3), width: 2),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSun() {
+    const double celestialBodyRadius = kCelestialBodySize / 2;
+
+    return Positioned(
+      left: kCenterPoint - celestialBodyRadius,
+      top: kCenterPoint - celestialBodyRadius,
+      child: Container(
+        width: kCelestialBodySize,
+        height: kCelestialBodySize,
+        decoration: const BoxDecoration(
+          color: kSunColor,
+          shape: BoxShape.circle,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDraggablePlanet(Map<String, double> position) {
+    return Positioned(
+      left: position['x']! - position['radius']!,
+      top: position['y']! - position['radius']!,
+      child: GestureDetector(
+        onPanUpdate: (details) {
+          _handlePlanetDrag(details, position);
+        },
+        child: Container(
+          width: kCelestialBodySize,
+          height: kCelestialBodySize,
+          decoration: const BoxDecoration(
+            color: kPlanetColor,
+            shape: BoxShape.circle,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handlePlanetDrag(
+    DragUpdateDetails details,
+    Map<String, double> position,
+  ) {
+    // Calculate drag position relative to orbit center
+    final double dragX =
+        details.localPosition.dx +
+        position['x']! -
+        position['radius']! -
+        kCenterPoint;
+    final double dragY =
+        details.localPosition.dy +
+        position['y']! -
+        position['radius']! -
+        kCenterPoint;
+
+    // Calculate angle from drag position
+    double newAngle = atan2(dragY, dragX) + (pi / 2);
+    if (newAngle < 0) newAngle += 2 * pi;
+
+    _updateTimerFromPlanetPosition(newAngle);
+  }
+
+  Widget _buildTimerControls() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(onPressed: _startTimer, child: const Text('Start')),
+        const SizedBox(width: 10),
+        ElevatedButton(onPressed: _stopTimer, child: const Text('Stop')),
+        const SizedBox(width: 10),
+        ElevatedButton(onPressed: _resetTimer, child: const Text('Reset')),
+      ],
     );
   }
 }

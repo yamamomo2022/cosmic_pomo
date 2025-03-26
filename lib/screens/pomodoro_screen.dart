@@ -1,11 +1,10 @@
 import 'dart:async';
 
+import 'package:cosmic_pomo/constants/app_constants.dart';
+import 'package:cosmic_pomo/utils/time_formatter.dart';
+import 'package:cosmic_pomo/widgets/orbital_animation.dart';
+import 'package:cosmic_pomo/widgets/timer_controls.dart';
 import 'package:flutter/material.dart';
-
-import '../constants/app_constants.dart';
-import '../utils/time_formatter.dart';
-import '../widgets/orbital_animation.dart';
-import '../widgets/timer_controls.dart';
 
 class PomodoroScreen extends StatefulWidget {
   const PomodoroScreen({super.key});

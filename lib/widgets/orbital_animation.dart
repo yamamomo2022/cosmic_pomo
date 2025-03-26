@@ -1,8 +1,8 @@
 import 'dart:math' show cos, sin, atan2;
 
+import 'package:cosmic_pomo/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 
-import '../constants/app_constants.dart';
 import 'celestial_bodies.dart';
 
 class OrbitalAnimation extends StatelessWidget {

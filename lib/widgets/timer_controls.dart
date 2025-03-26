@@ -1,6 +1,5 @@
+import 'package:cosmic_pomo/constants/app_constants.dart';
 import 'package:flutter/material.dart';
-
-import '../constants/app_constants.dart';
 
 class TimerControls extends StatelessWidget {
   const TimerControls({

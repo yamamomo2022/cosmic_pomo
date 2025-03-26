@@ -1,6 +1,5 @@
+import 'package:cosmic_pomo/constants/app_constants.dart';
 import 'package:flutter/material.dart';
-
-import '../constants/app_constants.dart';
 
 /// Widget that displays the orbital path
 class OrbitPath extends StatelessWidget {

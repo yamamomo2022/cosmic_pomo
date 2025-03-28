@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class AppConstants {
   // Timer constants
   static const int pomodoroDuration = 25 * 60; // 25 minutes in seconds
+  static const int breakDuration = 3 * 60; // 3 minutes in seconds
 
   // Celestial body properties
   static const double orbitRadius = 80.0;
@@ -13,6 +14,7 @@ class AppConstants {
   static const double celestialBodySize = 30.0;
   static const Color sunColor = Colors.red;
   static const Color planetColor = Colors.blue;
+  static const Color breakModePlanetColor = Colors.green;
   static const Color orbitColor = Colors.grey;
 
   // Animation constants

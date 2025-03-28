@@ -10,10 +10,12 @@ class OrbitalAnimation extends StatelessWidget {
     super.key,
     required this.animation,
     required this.onPlanetDragged,
+    required this.planetColor,
   });
 
   final Animation<double> animation;
   final void Function(double) onPlanetDragged;
+  final Color planetColor;
 
   @override
   Widget build(BuildContext context) {

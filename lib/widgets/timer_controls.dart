@@ -18,11 +18,23 @@ class TimerControls extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ElevatedButton(onPressed: onStart, child: const Text('Start')),
+        ElevatedButton.icon(
+          onPressed: onStart,
+          icon: const Icon(Icons.play_arrow),
+          label: Text('start'),
+        ),
         const SizedBox(width: AppConstants.controlButtonSpacing),
-        ElevatedButton(onPressed: onStop, child: const Text('Stop')),
+        ElevatedButton.icon(
+          onPressed: onStop,
+          icon: const Icon(Icons.stop),
+          label: Text('Stop'),
+        ),
         const SizedBox(width: AppConstants.controlButtonSpacing),
-        ElevatedButton(onPressed: onReset, child: const Text('Reset')),
+        ElevatedButton.icon(
+          onPressed: onReset,
+          icon: const Icon(Icons.refresh),
+          label: Text('Reset'),
+        ),
       ],
     );
   }

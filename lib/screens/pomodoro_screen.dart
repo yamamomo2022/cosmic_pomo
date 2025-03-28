@@ -130,15 +130,19 @@ class _PomodoroScreenState extends State<PomodoroScreen>
               const SizedBox(height: AppConstants.standardSpacing),
               Text(
                 'Pomodoro Timer',
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(color: Colors.white),
+                style:
+                    Theme.of(
+                      context,
+                    ).textTheme.headlineMedium?.copyWith(color: Colors.white) ??
+                    TextStyle(color: Colors.white),
               ),
               Text(
                 TimeFormatter.formatTime(_remainingTime),
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(color: Colors.white),
+                style:
+                    Theme.of(
+                      context,
+                    ).textTheme.headlineMedium?.copyWith(color: Colors.white) ??
+                    TextStyle(color: Colors.white),
               ),
               const SizedBox(height: AppConstants.standardSpacing),
               OrbitalAnimation(

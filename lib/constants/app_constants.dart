@@ -20,6 +20,6 @@ class AppConstants {
   static const double topPosition = -pi / 2; // Start from top (12 o'clock)
 
   // UI spacing
-  static const double standardSpacing = 20.0;
-  static const double controlButtonSpacing = 10.0;
+  static const double standardSpacing = 120.0;
+  static const double controlButtonSpacing = 24.0;
 }

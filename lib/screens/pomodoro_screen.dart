@@ -6,6 +6,9 @@ import 'package:cosmic_pomo/widgets/orbital_animation.dart';
 import 'package:cosmic_pomo/widgets/timer_controls.dart';
 import 'package:flutter/material.dart';
 
+/// Represents the two modes of the Pomodoro timer
+enum PomodoroMode { workMode, breakMode }
+
 class PomodoroScreen extends StatefulWidget {
   const PomodoroScreen({super.key});
 
@@ -15,6 +18,8 @@ class PomodoroScreen extends StatefulWidget {
 
 class _PomodoroScreenState extends State<PomodoroScreen>
     with SingleTickerProviderStateMixin {
+  // Current mode of the timer
+  PomodoroMode _currentMode = PomodoroMode.workMode;
   int _remainingTime = AppConstants.pomodoroDuration;
   Timer? _timer;
 
@@ -28,7 +33,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
 
     // Initialize animation controller with the total timer duration
     _animationController = AnimationController(
-      duration: const Duration(seconds: AppConstants.pomodoroDuration),
+      duration: Duration(seconds: _getCurrentModeDuration()),
       vsync: this,
     );
 
@@ -46,13 +51,44 @@ class _PomodoroScreenState extends State<PomodoroScreen>
     super.dispose();
   }
 
+  /// Returns the duration in seconds for the current mode
+  int _getCurrentModeDuration() {
+    return _currentMode == PomodoroMode.workMode
+        ? AppConstants.pomodoroDuration
+        : AppConstants.breakDuration;
+  }
+
+  /// Returns a user-friendly name for the current mode
+  String _getCurrentModeName() {
+    return _currentMode == PomodoroMode.workMode ? 'Work' : 'Break';
+  }
+
+  /// Toggles between work and break modes
+  void _toggleMode() {
+    setState(() {
+      _currentMode =
+          _currentMode == PomodoroMode.workMode
+              ? PomodoroMode.breakMode
+              : PomodoroMode.workMode;
+
+      // Reset timer for the new mode
+      _remainingTime = _getCurrentModeDuration();
+
+      // Reset animation controller duration
+      _animationController.duration = Duration(
+        seconds: _getCurrentModeDuration(),
+      );
+      _animationController.value = 0.0;
+    });
+  }
+
   void _startTimer() {
     if (_timer != null) {
       _timer!.cancel();
     }
 
     // Variables needed for syncing the timer and animation
-    final totalDuration = AppConstants.pomodoroDuration.toDouble();
+    final totalDuration = _getCurrentModeDuration().toDouble();
     final currentProgress = _remainingTime / totalDuration;
 
     // Start animation from current timer position
@@ -67,6 +103,10 @@ class _PomodoroScreenState extends State<PomodoroScreen>
           _animationController.value = 1.0 - (_remainingTime / totalDuration);
         } else {
           _timer!.cancel();
+          // Automatically switch to the next mode when timer completes
+          _toggleMode();
+          // Start the next timer automatically
+          _startTimer();
         }
       });
     });
@@ -81,7 +121,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
 
   void _resetTimer() {
     setState(() {
-      _remainingTime = AppConstants.pomodoroDuration;
+      _remainingTime = _getCurrentModeDuration();
       if (_timer != null) {
         _timer!.cancel();
       }
@@ -98,7 +138,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
 
       // Update timer based on new position
       final int newRemainingTime =
-          (AppConstants.pomodoroDuration * (1.0 - progressValue)).round();
+          (_getCurrentModeDuration() * (1.0 - progressValue)).round();
       _remainingTime = newRemainingTime;
 
       if (_timer != null) {
@@ -110,6 +150,11 @@ class _PomodoroScreenState extends State<PomodoroScreen>
 
   @override
   Widget build(BuildContext context) {
+    final Color modeColor =
+        _currentMode == PomodoroMode.workMode
+            ? AppConstants.planetColor
+            : AppConstants.breakModePlanetColor;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -127,33 +172,48 @@ class _PomodoroScreenState extends State<PomodoroScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const SizedBox(height: AppConstants.standardSpacing),
+              const SizedBox(height: AppConstants.standardSpacing / 2),
+              Text(
+                '${_getCurrentModeName()} Mode',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: modeColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               Text(
                 'Pomodoro Timer',
-                style:
-                    Theme.of(
-                      context,
-                    ).textTheme.headlineMedium?.copyWith(color: Colors.white) ??
-                    TextStyle(color: Colors.white),
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineMedium?.copyWith(color: Colors.white),
               ),
               Text(
                 TimeFormatter.formatTime(_remainingTime),
-                style:
-                    Theme.of(
-                      context,
-                    ).textTheme.headlineMedium?.copyWith(color: Colors.white) ??
-                    TextStyle(color: Colors.white),
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineMedium?.copyWith(color: Colors.white),
               ),
               const SizedBox(height: AppConstants.standardSpacing),
               OrbitalAnimation(
                 animation: _animation,
                 onPlanetDragged: _updateTimerFromPlanetPosition,
+                planetColor: modeColor,
               ),
               const SizedBox(height: AppConstants.standardSpacing),
               TimerControls(
                 onStart: _startTimer,
                 onStop: _stopTimer,
                 onReset: _resetTimer,
+              ),
+              TextButton(
+                onPressed: () {
+                  _stopTimer();
+                  _toggleMode();
+                  _resetTimer();
+                },
+                child: Text(
+                  'Switch to ${_currentMode == PomodoroMode.workMode ? 'Break Mode' : 'Work'} Mode',
+                  style: TextStyle(color: modeColor),
+                ),
               ),
             ],
           ),

@@ -7,7 +7,7 @@ import 'package:cosmic_pomo/widgets/timer_controls.dart';
 import 'package:flutter/material.dart';
 
 /// Represents the two modes of the Pomodoro timer
-enum PomodoroMode { work, breakMode }
+enum PomodoroMode { workMode, breakMode }
 
 class PomodoroScreen extends StatefulWidget {
   const PomodoroScreen({super.key});
@@ -19,7 +19,7 @@ class PomodoroScreen extends StatefulWidget {
 class _PomodoroScreenState extends State<PomodoroScreen>
     with SingleTickerProviderStateMixin {
   // Current mode of the timer
-  PomodoroMode _currentMode = PomodoroMode.work;
+  PomodoroMode _currentMode = PomodoroMode.workMode;
   int _remainingTime = AppConstants.pomodoroDuration;
   Timer? _timer;
 
@@ -53,23 +53,23 @@ class _PomodoroScreenState extends State<PomodoroScreen>
 
   /// Returns the duration in seconds for the current mode
   int _getCurrentModeDuration() {
-    return _currentMode == PomodoroMode.work
+    return _currentMode == PomodoroMode.workMode
         ? AppConstants.pomodoroDuration
         : AppConstants.breakDuration;
   }
 
   /// Returns a user-friendly name for the current mode
   String _getCurrentModeName() {
-    return _currentMode == PomodoroMode.work ? 'Work' : 'Break Mode';
+    return _currentMode == PomodoroMode.workMode ? 'Work' : 'Break';
   }
 
   /// Toggles between work and break modes
   void _toggleMode() {
     setState(() {
       _currentMode =
-          _currentMode == PomodoroMode.work
+          _currentMode == PomodoroMode.workMode
               ? PomodoroMode.breakMode
-              : PomodoroMode.work;
+              : PomodoroMode.workMode;
 
       // Reset timer for the new mode
       _remainingTime = _getCurrentModeDuration();
@@ -151,7 +151,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
   @override
   Widget build(BuildContext context) {
     final Color modeColor =
-        _currentMode == PomodoroMode.work
+        _currentMode == PomodoroMode.workMode
             ? AppConstants.planetColor
             : AppConstants.breakModePlanetColor;
 
@@ -211,7 +211,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
                   _resetTimer();
                 },
                 child: Text(
-                  'Switch to ${_currentMode == PomodoroMode.work ? 'Break Mode' : 'Work'} Mode',
+                  'Switch to ${_currentMode == PomodoroMode.workMode ? 'Break Mode' : 'Work'} Mode',
                   style: TextStyle(color: modeColor),
                 ),
               ),

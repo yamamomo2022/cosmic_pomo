@@ -1,14 +1,12 @@
 import 'dart:async';
 
 import 'package:cosmic_pomo/constants/app_constants.dart';
+import 'package:cosmic_pomo/enum/pomodoro_mode.dart';
 import 'package:cosmic_pomo/utils/time_formatter.dart';
 import 'package:cosmic_pomo/widgets/orbital_animation.dart';
 import 'package:cosmic_pomo/widgets/timer_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-
-/// Represents the two modes of the Pomodoro timer
-enum PomodoroMode { workMode, breakMode }
 
 class PomodoroScreen extends StatefulWidget {
   const PomodoroScreen({super.key});

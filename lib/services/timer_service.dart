@@ -5,6 +5,8 @@ import 'package:cosmic_pomo/enum/pomodoro_mode.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../utils/logger.dart';
+
 class TimerService extends ChangeNotifier {
   // Current state variables
   PomodoroMode _currentMode = PomodoroMode.workMode;
@@ -51,6 +53,7 @@ class TimerService extends ChangeNotifier {
   }
 
   void startTimer() {
+    logger.d('Timer started');
     if (_timer != null) {
       _timer!.cancel();
     }
@@ -86,6 +89,7 @@ class TimerService extends ChangeNotifier {
   }
 
   void stopTimer() {
+    logger.d('Timer stopped');
     if (_timer != null) {
       _timer!.cancel();
       _timer = null;
@@ -99,6 +103,7 @@ class TimerService extends ChangeNotifier {
   }
 
   void resetTimer() {
+    logger.d('Timer reset');
     _remainingTime = _getCurrentModeDuration();
     if (_timer != null) {
       _timer!.cancel();

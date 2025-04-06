@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_launcher_icons: ^0.14.3
   wakelock_plus: ^1.2.11
+  logger: ^2.5.0
 
 dev_dependencies:
   flutter_test:

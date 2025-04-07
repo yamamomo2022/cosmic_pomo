@@ -1,6 +1,7 @@
 import 'dart:math' show cos, sin, atan2;
 
 import 'package:cosmic_pomo/constants/app_constants.dart';
+import 'package:cosmic_pomo/models/planet_position.dart';
 import 'package:flutter/material.dart';
 
 import 'celestial_bodies.dart';

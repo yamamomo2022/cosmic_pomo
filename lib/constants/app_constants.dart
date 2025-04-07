@@ -25,6 +25,7 @@ class AppConstants {
 
   // UI spacing
   static const double standardSpacing = 120.0;
+  static const double smallSpacing = 60.0;
   static const double controlButtonSpacing = 24.0;
 
   // Add these constants to your AppConstants class

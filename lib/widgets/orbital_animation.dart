@@ -17,6 +17,37 @@ class OrbitalAnimation extends StatelessWidget {
   final void Function(double) onPlanetDragged;
   final Color planetColor;
 
+  PlanetPosition _calculatePlanetPosition(double angle) {
+    const double celestialBodyRadius = AppConstants.celestialBodySize / 2;
+
+    final double x =
+        AppConstants.centerPoint + AppConstants.orbitRadius * cos(angle);
+    final double y =
+        AppConstants.centerPoint + AppConstants.orbitRadius * sin(angle);
+
+    return PlanetPosition(x: x, y: y, radius: celestialBodyRadius);
+  }
+
+  void _handlePlanetDrag(DragUpdateDetails details, PlanetPosition position) {
+    // Calculate drag position relative to orbit center
+    final double dragX =
+        position.x -
+        position.radius +
+        details.localPosition.dx -
+        AppConstants.centerPoint;
+    final double dragY =
+        position.y -
+        position.radius +
+        details.localPosition.dy -
+        AppConstants.centerPoint;
+
+    // Calculate angle from drag position
+    double newAngle = atan2(dragY, dragX) - AppConstants.topPosition;
+    if (newAngle < 0) newAngle += AppConstants.fullCircle;
+
+    onPlanetDragged(newAngle);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -42,39 +73,5 @@ class OrbitalAnimation extends StatelessWidget {
         },
       ),
     );
-  }
-
-  Map<String, double> _calculatePlanetPosition(double angle) {
-    const double celestialBodyRadius = AppConstants.celestialBodySize / 2;
-
-    final double x =
-        AppConstants.centerPoint + AppConstants.orbitRadius * cos(angle);
-    final double y =
-        AppConstants.centerPoint + AppConstants.orbitRadius * sin(angle);
-
-    return {'x': x, 'y': y, 'radius': celestialBodyRadius};
-  }
-
-  void _handlePlanetDrag(
-    DragUpdateDetails details,
-    Map<String, double> position,
-  ) {
-    // Calculate drag position relative to orbit center
-    final double dragX =
-        (position['x'] ?? 0) -
-        (position['radius'] ?? 0) +
-        details.localPosition.dx -
-        AppConstants.centerPoint;
-    final double dragY =
-        (position['y'] ?? 0) -
-        (position['radius'] ?? 0) +
-        details.localPosition.dy -
-        AppConstants.centerPoint;
-
-    // Calculate angle from drag position
-    double newAngle = atan2(dragY, dragX) - AppConstants.topPosition;
-    if (newAngle < 0) newAngle += AppConstants.fullCircle;
-
-    onPlanetDragged(newAngle);
   }
 }

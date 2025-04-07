@@ -12,6 +12,8 @@ class AppConstants {
   static const double orbitRadius = 80.0;
   static const double centerPoint = 100.0;
   static const double celestialBodySize = 30.0;
+  static const double sunSize = 50.0; // 太陽のサイズ
+  static const double earthSize = 25.0; // 地球のサイズ
   static const Color sunColor = Colors.red;
   static const Color planetColor = Colors.blue;
   static const Color breakModePlanetColor = Colors.green;

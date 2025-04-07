@@ -8,7 +8,7 @@ class DraggablePlanet extends StatelessWidget {
     super.key,
     required this.position,
     required this.onDrag,
-    this.celestialBodySize = AppConstants.celestialBodySize,
+    this.celestialBodySize = AppConstants.earthSize,
     this.planetColor = AppConstants.planetColor,
   });
 

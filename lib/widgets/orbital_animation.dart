@@ -19,7 +19,7 @@ class OrbitalAnimation extends StatelessWidget {
   final Color planetColor;
 
   PlanetPosition _calculatePlanetPosition(double angle) {
-    const double celestialBodyRadius = AppConstants.celestialBodySize / 2;
+    const double celestialBodyRadius = AppConstants.earthSize / 2;
 
     final double x =
         AppConstants.centerPoint + AppConstants.orbitRadius * cos(angle);

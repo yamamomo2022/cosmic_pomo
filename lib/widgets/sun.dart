@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class Sun extends StatelessWidget {
   const Sun({
     super.key,
-    this.celestialBodySize = AppConstants.celestialBodySize,
+    this.celestialBodySize = AppConstants.sunSize,
     this.centerPoint = AppConstants.centerPoint,
     this.sunColor = AppConstants.sunColor,
   });

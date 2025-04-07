@@ -1,9 +1,10 @@
 import 'package:cosmic_pomo/constants/app_constants.dart';
 import 'package:cosmic_pomo/enum/pomodoro_mode.dart';
 import 'package:cosmic_pomo/services/timer_service.dart';
-import 'package:cosmic_pomo/utils/time_formatter.dart';
+import 'package:cosmic_pomo/widgets/mode_toggle_button.dart';
 import 'package:cosmic_pomo/widgets/orbital_animation.dart';
 import 'package:cosmic_pomo/widgets/timer_controls.dart';
+import 'package:cosmic_pomo/widgets/timer_display.dart';
 import 'package:flutter/material.dart';
 
 class PomodoroScreen extends StatefulWidget {
@@ -66,7 +67,7 @@ class _PomodoroScreenState extends State<PomodoroScreen>
 
   @override
   Widget build(BuildContext context) {
-    final Color modeColor =
+    final Color currentModeColor =
         _timerService.currentMode == PomodoroMode.workMode
             ? AppConstants.planetColor
             : AppConstants.breakModePlanetColor;
@@ -88,48 +89,36 @@ class _PomodoroScreenState extends State<PomodoroScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const SizedBox(height: AppConstants.standardSpacing / 2),
+              const SizedBox(height: AppConstants.smallSpacing / 2),
               Text(
                 '${_timerService.getCurrentModeName()} Mode',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: modeColor,
+                  color: currentModeColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Text(
-                'Pomodoro Timer',
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(color: Colors.white),
-              ),
-              Text(
-                TimeFormatter.formatTime(_timerService.remainingTime),
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(color: Colors.white),
-              ),
-              const SizedBox(height: AppConstants.standardSpacing),
+              const SizedBox(height: AppConstants.smallSpacing),
+              TimerDisplay(remainingTime: _timerService.remainingTime),
+              const SizedBox(height: AppConstants.smallSpacing),
               OrbitalAnimation(
                 animation: _animation,
                 onPlanetDragged: _timerService.updateTimerFromPlanetPosition,
-                planetColor: modeColor,
+                planetColor: currentModeColor,
               ),
-              const SizedBox(height: AppConstants.standardSpacing),
+              const SizedBox(height: AppConstants.smallSpacing),
               TimerControls(
                 onStart: _timerService.startTimer,
                 onStop: _timerService.stopTimer,
                 onReset: _timerService.resetTimer,
               ),
-              TextButton(
-                onPressed: () {
+              ModeToggleButton(
+                currentMode: _timerService.currentMode,
+                modeColor: currentModeColor,
+                onToggle: () {
                   _timerService.stopTimer();
                   _timerService.toggleMode();
                   _timerService.resetTimer();
                 },
-                child: Text(
-                  'Switch to ${_timerService.currentMode == PomodoroMode.workMode ? 'Break' : 'Work'} Mode',
-                  style: TextStyle(color: modeColor),
-                ),
               ),
             ],
           ),

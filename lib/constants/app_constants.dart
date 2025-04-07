@@ -24,4 +24,13 @@ class AppConstants {
   // UI spacing
   static const double standardSpacing = 120.0;
   static const double controlButtonSpacing = 24.0;
+
+  // Add these constants to your AppConstants class
+  static const Color backgroundGradientStart = Color(
+    0xFF0B0D21,
+  ); // Deep space blue
+  static const Color backgroundGradientMiddle = Color(
+    0xFF191970,
+  ); // Midnight blue
+  static const Color backgroundGradientEnd = Color(0xFF000000); // Black
 }

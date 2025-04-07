@@ -78,9 +78,9 @@ class _PomodoroScreenState extends State<PomodoroScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF0B0D21), // Deep space blue
-              Color(0xFF191970), // Midnight blue
-              Color(0xFF000000), // Black
+              AppConstants.backgroundGradientStart,
+              AppConstants.backgroundGradientMiddle,
+              AppConstants.backgroundGradientEnd,
             ],
           ),
         ),

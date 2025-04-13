@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cosmic_pomo/constants/app_constants.dart';
 import 'package:cosmic_pomo/enum/pomodoro_mode.dart';
 import 'package:flutter/foundation.dart';
@@ -21,6 +22,11 @@ class TimerService extends ChangeNotifier {
   bool get isRunning => _isRunning;
   double get animationValue => _animationValue;
 
+  // AudioPlayerインスタンスを追加
+  final AudioPlayer _audioPlayer = AudioPlayer();
+  static const String _soundAssetPath =
+      'audio/notification.mp3'; // 音声ファイルのパスを指定
+
   // Constructor
   TimerService() {
     _remainingTime = _getCurrentModeDuration();
@@ -38,6 +44,15 @@ class TimerService extends ChangeNotifier {
     return _currentMode == PomodoroMode.workMode ? 'Work' : 'Break';
   }
 
+  Future<void> _playSound() async {
+    try {
+      await _audioPlayer.play(AssetSource(_soundAssetPath));
+      logger.d('Played sound: $_soundAssetPath');
+    } catch (e) {
+      logger.e('Error playing sound: $e');
+    }
+  }
+
   /// Toggles between work and break modes
   void toggleMode() {
     _currentMode =
@@ -48,6 +63,9 @@ class TimerService extends ChangeNotifier {
     // Reset timer for the new mode
     _remainingTime = _getCurrentModeDuration();
     _animationValue = 0.0;
+
+    // モード切り替え時に音を鳴らす
+    _playSound();
 
     notifyListeners();
   }
@@ -78,6 +96,8 @@ class TimerService extends ChangeNotifier {
         notifyListeners();
       } else {
         _timer!.cancel();
+        // タイマー完了時に音を鳴らす
+        _playSound();
         // Automatically switch to the next mode when timer completes
         toggleMode();
         // Start the next timer automatically

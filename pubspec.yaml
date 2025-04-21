@@ -38,6 +38,7 @@ dependencies:
   wakelock_plus: ^1.2.11
   logger: ^2.5.0
   audioplayers: ^6.0.0
+  google_mobile_ads: ^6.0.0
 
 dev_dependencies:
   flutter_test:

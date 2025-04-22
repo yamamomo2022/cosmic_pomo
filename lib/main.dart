@@ -9,7 +9,14 @@ import 'utils/logger.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    logger.e('Firebase initialization error: $e');
+  }
 
   // Google Mobile Ads SDKを初期化する
   await MobileAds.instance.initialize();

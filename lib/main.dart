@@ -38,15 +38,20 @@ Future<void> main() async {
   ]);
 
   logger.d('App started');
-
-  runApp(const MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    var analytics = ref.watch(analyticsRepository);
+    var analyticsObserver = ref.watch(analyticsObserverRepository);
+
+    analytics.logAppOpen();
+    logger.d('FirebaseAnalytics instance: $analytics');
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Cosmic Pomo',
@@ -54,6 +59,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const PomodoroScreen(),
+      navigatorObservers: [analyticsObserver],
     );
   }
 }

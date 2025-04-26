@@ -10,10 +10,10 @@ import 'screens/pomodoro_screen.dart';
 import 'utils/logger.dart';
 
 /// FirebaseAnalyticsのインスタンス
-final analyticsRepository = Provider((ref) => FirebaseAnalytics.instance);
+final analyticsRepository = StateProvider((ref) => FirebaseAnalytics.instance);
 
 /// FirebaseAnalyticsObserverのインスタンス
-final analyticsObserverRepository = Provider(
+final analyticsObserverRepository = StateProvider(
   (ref) => FirebaseAnalyticsObserver(analytics: ref.watch(analyticsRepository)),
 );
 
@@ -38,7 +38,7 @@ Future<void> main() async {
   ]);
 
   logger.d('App started');
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
@@ -46,8 +46,10 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var analytics = ref.watch(analyticsRepository);
-    var analyticsObserver = ref.watch(analyticsObserverRepository);
+    final FirebaseAnalytics analytics = ref.watch(analyticsRepository);
+    final FirebaseAnalyticsObserver analyticsObserver = ref.watch(
+      analyticsObserverRepository,
+    );
 
     analytics.logAppOpen();
     logger.d('FirebaseAnalytics instance: $analytics');
@@ -55,10 +57,10 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Cosmic Pomo',
+      home: const PomodoroScreen(),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const PomodoroScreen(),
       navigatorObservers: [analyticsObserver],
     );
   }

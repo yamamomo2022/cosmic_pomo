@@ -1,3 +1,3 @@
-export 'draggable_planet.dart';
-export 'orbit_path.dart';
-export 'sun.dart';
+export '../presentation/widgets/draggable_planet.dart';
+export '../presentation/widgets/orbit_path.dart';
+export '../presentation/widgets/sun.dart';

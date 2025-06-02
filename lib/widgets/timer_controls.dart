@@ -1,39 +1,29 @@
-import 'package:cosmic_pomo/constants/app_constants.dart';
+import 'package:cosmic_pomo/application/providers/timer_providers.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class TimerControls extends StatelessWidget {
-  const TimerControls({
-    super.key,
-    required this.onStart,
-    required this.onStop,
-    required this.onReset,
-  });
-
-  final VoidCallback onStart;
-  final VoidCallback onStop;
-  final VoidCallback onReset;
+class TimerControls extends ConsumerWidget {
+  const TimerControls({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final session = ref.watch(pomodoroTimerServiceProvider);
+    final timerService = ref.read(pomodoroTimerServiceProvider.notifier);
+
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        ElevatedButton.icon(
-          onPressed: onStart,
-          icon: const Icon(Icons.play_arrow),
-          label: Text('start'),
+        ElevatedButton(
+          onPressed: session.currentTimer.isRunning ? null : () => timerService.startTimer(),
+          child: const Text('Start'),
         ),
-        const SizedBox(width: AppConstants.controlButtonSpacing),
-        ElevatedButton.icon(
-          onPressed: onStop,
-          icon: const Icon(Icons.stop),
-          label: Text('Stop'),
+        ElevatedButton(
+          onPressed: session.currentTimer.isRunning ? () => timerService.stopTimer() : null,
+          child: const Text('Stop'),
         ),
-        const SizedBox(width: AppConstants.controlButtonSpacing),
-        ElevatedButton.icon(
-          onPressed: onReset,
-          icon: const Icon(Icons.refresh),
-          label: Text('Reset'),
+        ElevatedButton(
+          onPressed: () => timerService.resetTimer(),
+          child: const Text('Reset'),
         ),
       ],
     );

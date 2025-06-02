@@ -7,24 +7,35 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cosmic_pomo/main.dart';
+import 'package:cosmic_pomo/application/providers/timer_providers.dart';
+import 'package:cosmic_pomo/domain/entities/pomodoro_session.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Cosmic Pomo app smoke test', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          pomodoroTimerServiceProvider.overrideWith((ref) => MockPomodoroTimerService()),
+        ],
+        child: const MyApp(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Cosmic Pomo'), findsOneWidget);
+    expect(find.text('Start'), findsOneWidget);
+    expect(find.text('Stop'), findsOneWidget);
+    expect(find.text('Reset'), findsOneWidget);
   });
+}
+
+class MockPomodoroTimerService extends StateNotifier<PomodoroSession> {
+  MockPomodoroTimerService() : super(PomodoroSession());
+
+  Future<void> startTimer() async {}
+  Future<void> stopTimer() async {}
+  void resetTimer() {}
+  Future<void> toggleMode() async {}
+  void updateTimerFromPlanetPosition(double newAngle, double fullCircle) {}
 }

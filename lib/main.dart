@@ -6,15 +6,13 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'firebase_options.dart';
-import 'screens/pomodoro_screen.dart';
+import 'presentation/screens/pomodoro_screen.dart';
 import 'utils/logger.dart';
 
-/// FirebaseAnalyticsのインスタンス
-final analyticsRepository = StateProvider((ref) => FirebaseAnalytics.instance);
+final analyticsProvider = StateProvider((ref) => FirebaseAnalytics.instance);
 
-/// FirebaseAnalyticsObserverのインスタンス
-final analyticsObserverRepository = StateProvider(
-  (ref) => FirebaseAnalyticsObserver(analytics: ref.watch(analyticsRepository)),
+final analyticsObserverProvider = StateProvider(
+  (ref) => FirebaseAnalyticsObserver(analytics: ref.watch(analyticsProvider)),
 );
 
 Future<void> main() async {
@@ -46,9 +44,9 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final FirebaseAnalytics analytics = ref.watch(analyticsRepository);
+    final FirebaseAnalytics analytics = ref.watch(analyticsProvider);
     final FirebaseAnalyticsObserver analyticsObserver = ref.watch(
-      analyticsObserverRepository,
+      analyticsObserverProvider,
     );
 
     analytics.logAppOpen();

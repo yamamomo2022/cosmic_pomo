@@ -1,44 +1,18 @@
-import 'package:cosmic_pomo/constants/app_constants.dart';
-import 'package:cosmic_pomo/enum/pomodoro_mode.dart';
+import 'package:cosmic_pomo/application/providers/timer_providers.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class ModeToggleButton extends StatelessWidget {
-  final PomodoroMode currentMode;
-  final Color modeColor;
-  final VoidCallback onToggle;
-
-  const ModeToggleButton({
-    super.key,
-    required this.currentMode,
-    required this.modeColor,
-    required this.onToggle,
-  });
+class ModeToggleButton extends ConsumerWidget {
+  const ModeToggleButton({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final String nextModeName =
-        currentMode == PomodoroMode.workMode ? 'Break' : 'Work';
+  Widget build(BuildContext context, WidgetRef ref) {
+    final session = ref.watch(pomodoroTimerServiceProvider);
+    final timerService = ref.read(pomodoroTimerServiceProvider.notifier);
 
-    return Padding(
-      padding: const EdgeInsets.only(top: AppConstants.smallSpacing),
-      child: TextButton(
-        onPressed: onToggle,
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: modeColor.withOpacity(0.5), width: 1),
-          ),
-        ),
-        child: Text(
-          'Switch to $nextModeName Mode',
-          style: TextStyle(
-            color: modeColor,
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
-        ),
-      ),
+    return ElevatedButton(
+      onPressed: () => timerService.toggleMode(),
+      child: Text('Switch to ${session.currentModeName}'),
     );
   }
 }
